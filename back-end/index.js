@@ -11,7 +11,7 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 
 // CORS configuration
 const corsOptions = {
-  origin: '*', 'https://anime-recommendation-deployment-1.onrender.com',
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: 'Content-Type, Authorization',
   credentials: true,
