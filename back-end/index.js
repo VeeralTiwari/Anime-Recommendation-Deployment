@@ -2,26 +2,30 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
+// MongoDB connection string
+const uri = "mongodb+srv://dbUser:Abcde333@cluster0.rk5ybk0.mongodb.net/myDatabase?retryWrites=true&w=majority";
+
 // Create an instance of Express
 const app = express();
 app.use(express.json()); // Middleware to parse JSON request bodies
 
+// CORS configuration
 const corsOptions = {
-  origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', 
+  origin: '*', 
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: 'Content-Type, Authorization',
   credentials: true,
   optionsSuccessStatus: 204
 };
 app.use(cors(corsOptions));
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/anime_db', {
+// Connect to MongoDB using Mongoose
+mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('Failed to connect to MongoDB', err));
+.then(() => console.log("Successfully connected to MongoDB using Mongoose"))
+.catch(err => console.log("MongoDB connection error: ", err));
 
 // Define a Mongoose schema and model
 const itemSchema = new mongoose.Schema({
@@ -44,6 +48,8 @@ app.post('/', async (req, res) => {
     res.status(400).send(err.message);
   }
 });
+
+// Route to get all items
 app.get('/', async (req, res) => {
   try {
     const items = await Item.find();
@@ -52,8 +58,9 @@ app.get('/', async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-// Route to delete data
-app.delete('/', async (req, res) => {
+
+// Route to delete an item by ID
+app.delete('/:id', async (req, res) => {
   try {
     const deletedItem = await Item.findByIdAndDelete(req.params.id);
     if (!deletedItem) {
@@ -65,5 +72,6 @@ app.delete('/', async (req, res) => {
   }
 });
 
+// Start the server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
