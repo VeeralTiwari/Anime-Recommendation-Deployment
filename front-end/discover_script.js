@@ -70,7 +70,7 @@ async function renderData(data, id) {
       catalog_id: data.mal_id,
       metadata: jsonData
     };
-    fetch('http://127.0.0.1:5000', {
+    fetch('https://anime-recommendation-deployment.onrender.com', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
