@@ -64,7 +64,7 @@ async function renderData(data, id) {
       catalog_id: data.mal_id,
       metadata: jsonData
     };
-    fetch('https://anime-recommendation-deployment.onrender.com', {
+    fetch('https://anime-recommendation-deployment-2.onrender.com', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
