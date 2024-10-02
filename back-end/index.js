@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
+let ids =  new Set();
 // MongoDB connection string
 const uri = "mongodb+srv://dbUser2:Abcd333@cluster0.rk5ybk0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
@@ -38,10 +38,16 @@ const Item = mongoose.model('Item', itemSchema);
 // Route to insert data
 app.post('/', async (req, res) => {
   try {
+    if(ids.has(req.body.catalog_id)
+     {
+       alert("Already added to list");
+        return;
+    }
     const newItem = new Item({
       catalog_id: req.body.catalog_id,
       metadata: req.body.metadata
     });
+    ids.add(req.body.catalog_id);
     await newItem.save();
     res.status(201).send(newItem);
   } catch (err) {
