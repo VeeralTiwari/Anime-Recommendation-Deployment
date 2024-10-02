@@ -3,7 +3,7 @@ const loader = document.querySelector(".loader");
 
 async function fetchData() {
     try {
-        const response = await fetch('https://anime-recommendation-deployment.onrender.com', {
+        const response = await fetch('https://anime-recommendation-deployment-2.onrender.com', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
