@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 // MongoDB connection string
-const uri = "mongodb+srv://dbUser:@Abcde333@cluster0.rk5ybk0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = "mongodb+srv://dbUser:%40Abcde333@cluster0.rk5ybk0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create an instance of Express
 const app = express();
