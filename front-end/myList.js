@@ -26,6 +26,8 @@ async function renderData(data, id) {
     let name =  data.title;
     let eng_name =  data.title_english;
     eng_name = eng_name === null ? "" : eng_name;
+    let episodes = data.episodes;
+    episodes = episodes===null? 1 : episodes;
     const rank = data.rank;
     const Popularity = data.popularity;
     const premiere = (data.aired).string.slice(0,12);
@@ -90,7 +92,7 @@ async function renderData(data, id) {
     const num_id = "num-" + id;
     const count_id = "count-" + id;
     
-    const markedbutton = document.getElementById('mark_id');
+    const markedbutton = document.getElementById(mark_id);
     markedbutton.addEventListener('click', ()=>{
         let view = markedbutton.getAttribute('view');
         if(view === "no")
@@ -104,12 +106,12 @@ async function renderData(data, id) {
             markedbutton.setAttribute('view', "no")  ;
         }
     });
-    const count_episodes = document.getElementById("count_id");
+    const count_episodes = document.getElementById(count_id);
     count_episodes.addEventListener('click' , ()=>{
-        let count = Number(document.getElementById('num_id').textContent);
+        let count = Number(document.getElementById(num_id).textContent);
         if(count < episodes)
             count++;
-        document.getElementById('num_id').textContent = count;
+        document.getElementById(num_id).textContent = count;
     });
 }  
 async function viewData() {
