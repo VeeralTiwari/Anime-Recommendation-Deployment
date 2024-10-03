@@ -71,9 +71,9 @@ async function renderData(data, id) {
                         <div class="body">
                             <text class="spacing" style="font-size: smaller;">Status : <b>${data.status}</b></text>
 
-                            <text class="spacing"> <button class="btn marked" view = no>Mark as viewed  ? </button></text>
+                            <text class="spacing"> <button id = "marked-${id}" class="btn" view = no>Mark as viewed  ? </button></text>
 
-                            <text class="spacing" style="font-size: smaller; display: flex;">Episodes: <text class="episodes"><num>0</num><total>/24</total></text><button class="btn"><i class="fa-solid fa-plus" style= "padding: 5px 5px 0px 5px;"></i></button></text>
+                            <text class="spacing" style="font-size: smaller; display: flex;">Episodes: <text class="episodes"><num id="num-${id}">0</num><total>/${data.episodes}</total></text><button class="btn count"><i class="fa-solid fa-plus" style= "padding: 5px 5px 0px 5px;"></i></button></text>
                         </div>
                         <div class="synopsis">
                             <h4>Synopsis</h4>
@@ -83,8 +83,11 @@ async function renderData(data, id) {
                 </div>
             </div>`;
     catalogs.insertAdjacentHTML("beforeend", html);
-
-    const markedbutton = document.querySelector(".marked");
+    const mark_id = "marked-" + id;
+    const num_id = "num-" + id;
+    const count_id = "count-" + id;
+    
+    const markedbutton = document.getElementById('mark_id');
     markedbutton.addEventListener('click', ()=>{
         let view = markedbutton.getAttribute('view');
         if(view === "no")
@@ -97,6 +100,13 @@ async function renderData(data, id) {
             markedbutton.textContent = "Mark as viewed  ? ";
             markedbutton.setAttribute('view', "no")  ;
         }
+    });
+    const count_episodes = document.getElementById("count_id");
+    count_episodes.addEventListener('click' , ()=>{
+        let count = Number(document.getElementById('num_id').textContent);
+        if(count < episodes)
+            count++;
+        document.getElementById('num_id').textContent = count;
     });
 }  
 async function viewData() {
