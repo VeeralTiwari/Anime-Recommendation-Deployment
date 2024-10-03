@@ -180,6 +180,12 @@ score{
 .myList{
     margin: 30px 50px;
 }
+.no-items{
+    height: 70vh;
+    width: 80vw;
+    align-content: centre;
+    text-align: centre;
+}
 /* Common styles */
 main
 {
