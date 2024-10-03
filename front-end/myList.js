@@ -1,5 +1,6 @@
 const catalogs = document.querySelector(".catalogs");
 const loader = document.querySelector(".loader");
+const footer = document.querySelector("footer");
 
 async function fetchData() {
     try {
@@ -119,5 +120,6 @@ async function viewData() {
         const id = element.catalog_id;
         renderData(data,id);
     });
+    footer.classList.remove("hidden");
 }
 viewData(); // No need to pass arr since it's handled inside renderdata()
