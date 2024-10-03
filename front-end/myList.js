@@ -1,6 +1,7 @@
 const catalogs = document.querySelector(".catalogs");
 const loader = document.querySelector(".loader");
 const footer = document.querySelector("footer");
+const no_item_display = document.querySelector(".no-items");
 
 async function fetchData() {
     try {
@@ -116,6 +117,11 @@ async function renderData(data, id) {
 }  
 async function viewData() {
     const arr = await fetchData(); // Await the data fetched from fetchData()
+    if(arr.length())
+    {    
+        no_item_display.classList.add('hidden');
+        footer.classList.add('hidden');
+    }
     console.log(arr);
     // Add your code here to render the data to the DOM, e.g., using catalogs.innerHTML
     arr.forEach(async element => {
