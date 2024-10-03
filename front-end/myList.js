@@ -23,7 +23,8 @@ async function fetchData() {
 }
 async function renderData(data, id) {
     console.log(data);
-    let name = data.title_english || data.title;
+    let name =  data.title;
+    let eng_name =  data.title_english;
     const rank = data.rank;
     const Popularity = data.popularity;
     const premiere = (data.aired).string.slice(0,12);
@@ -43,7 +44,7 @@ async function renderData(data, id) {
   
     const html = `<div class="box2">
                 <div class="title">
-                    ${name} <br> <sb style="font-weight: 200; font-size: smaller;">SUBTEXT</sb>
+                    ${name} <br> <sb style="font-weight: 200; font-size: smaller;">${eng_name}</sb>
                 </div>
                 <div class="content">
                     <div class="content-item image">
