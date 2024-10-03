@@ -219,7 +219,8 @@ main
     display: flex;
     flex-wrap: wrap;
     margin: 0px auto;
-    max-width: 1330px;;
+    max-width: 1330px;
+    margin-bottom: 45px;
 }
 .no-flex{
     display: block;
