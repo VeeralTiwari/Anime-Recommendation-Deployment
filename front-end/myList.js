@@ -73,7 +73,7 @@ async function renderData(data, id) {
 
                             <text class="spacing"> <button id = "marked-${id}" class="btn" view = no>Mark as viewed  ? </button></text>
 
-                            <text class="spacing" style="font-size: smaller; display: flex;">Episodes: <text class="episodes"><num id="num-${id}">0</num><total>/${data.episodes}</total></text><button class="btn count"><i class="fa-solid fa-plus" style= "padding: 5px 5px 0px 5px;"></i></button></text>
+                            <text class="spacing" style="font-size: smaller; display: flex;">Episodes: <text class="episodes"><num id="num-${id}">0</num><total>/${data.episodes}</total></text><button id="count-${id}"><i class="fa-solid fa-plus" style= "padding: 5px 5px 0px 5px;"></i></button></text>
                         </div>
                         <div class="synopsis">
                             <h4>Synopsis</h4>
