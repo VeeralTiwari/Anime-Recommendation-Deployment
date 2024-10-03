@@ -80,11 +80,11 @@ async function renderData(data, id) {
     .then(response => response.text())
     .then(d => {
       console.log('Success:', d);
-      alert('Interaction data saved successfully(src:FRONTEND)');
+      alert('Added to list ✓');
     })
     .catch((error) => {
       console.error('Error:', error);
-      alert('Error saving interaction data');
+      alert('Error saving the data, please try again');
     });
   });
 }
