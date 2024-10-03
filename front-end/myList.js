@@ -25,6 +25,7 @@ async function renderData(data, id) {
     console.log(data);
     let name =  data.title;
     let eng_name =  data.title_english;
+    eng_name = eng_name === null ? "" : eng_name;
     const rank = data.rank;
     const Popularity = data.popularity;
     const premiere = (data.aired).string.slice(0,12);
