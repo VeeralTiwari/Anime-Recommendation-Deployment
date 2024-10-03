@@ -72,14 +72,13 @@ async function renderData(data, id) {
       body: JSON.stringify(interactionData)
     })
     .then(response => response.text())
-    .then(data => {
-      console.log('Success:', data);
-      notify();
-      
+    .then(d => {
+      console.log('Success:', d);
+      alert('Added to list ✓');
     })
     .catch((error) => {
       console.error('Error:', error);
-      alert('Error saving interaction data');
+      alert('Error saving data, please try again');
     });
   }
 
@@ -98,7 +97,7 @@ async function fetchAnimeList() {
     let num = Math.floor(Math.random() * 100);
     let id = arr[num];
     let data = await fetchAnimeData(id);
-    if (data) {
+    if (data && !set.has(data)) {
       ajaxContent.push(data);
       await renderData(data, id);
       set.add(data);
