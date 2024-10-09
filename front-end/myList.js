@@ -117,7 +117,7 @@ async function renderData(data, id) {
 }  
 async function viewData() {
     const arr = await fetchData(); // Await the data fetched from fetchData()
-    if(arr.length())
+    if(arr.length)
     {    
         no_item_display.classList.add('hidden');
         footer.classList.add('hidden');
