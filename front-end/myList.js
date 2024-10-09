@@ -122,6 +122,8 @@ async function viewData() {
         no_item_display.classList.add('hidden');
         footer.classList.add('hidden');
     }
+    else
+        no_item_display.classList.remove('hidden');
     console.log(arr);
     // Add your code here to render the data to the DOM, e.g., using catalogs.innerHTML
     arr.forEach(async element => {
