@@ -45,7 +45,7 @@ app.use(session({
   secret: 'yourSecretKey', // Replace with a strong secret key
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // Set true if using HTTPS
+  cookie: { secure: true } // Set true if using HTTPS
 }));
 
 // Default userId value
