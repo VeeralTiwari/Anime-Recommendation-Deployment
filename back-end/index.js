@@ -2,8 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const fs = require('fs');
-const path = require('path');
+const session = require('express-session');
 require('dotenv').config();
 
 const app = express();
@@ -42,24 +41,20 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-const envPath = path.resolve(__dirname, '.env');
-let envConfig = fs.readFileSync(envPath, 'utf8');
+app.use(session({
+  secret: 'yourSecretKey', // Replace with a strong secret key
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Set true if using HTTPS
+}));
 
-// Function to update .env variable
-function updateEnvVariable(key, value) {
-  const regex = new RegExp(`^${key}=.*`, 'm');
-  const newVariable = `${key}=${value}`;
-
-  if (envConfig.match(regex)) {
-    // Replace existing variable
-    envConfig = envConfig.replace(regex, newVariable);
-  } else {
-    // Add new variable if it doesn't exist
-    envConfig += `\n${newVariable}`;
+// Default userId value
+app.use((req, res, next) => {
+  if (!req.session.userId) {
+    req.session.userId = 'guest';
   }
-
-  fs.writeFileSync(envPath, envConfig);
-}
+  next();
+});
 
 // Sign Up Route
 app.post('/auth/signup', async (req, res) => {
@@ -75,7 +70,7 @@ app.post('/auth/signup', async (req, res) => {
     
     const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
-    updateEnvVariable('userId', newUser._id);
+    req.session.userId = newUser._id;
     res.status(201).send({ userId: newUser._id, msg: 'User created successfully' });
   } catch (error) {
     console.error('Error in signup route:', error);
@@ -97,8 +92,7 @@ app.post('/auth/login', async (req, res) => {
     if (!isMatch) {
       return res.status(400).send({ msg: 'Invalid password' });
     }
-    updateEnvVariable('userId', user._id);
-
+    req.session.userId = user._id;
     res.status(200).send({ userId: user._id, msg: 'User login successful' });
   } catch (error) {
     console.error('Error in login route:', error);
@@ -119,7 +113,6 @@ app.post('/insert', async (req, res) => {
     const newItem = { catalog_id, metadata };
     user.items.push(newItem);
     await user.save();
-
     res.status(201).json({ msg: 'Item successfully added' });
   } catch (error) {
     console.error('Error adding item:', error);
@@ -132,7 +125,7 @@ app.post('/get-list', async (req, res) => {
   const { userId } = req.body;
 
   try {
-    const user = await User.findById(userId );
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
     }
@@ -165,7 +158,7 @@ app.delete('/insert/:id', async (req, res) => {
 });
 
 app.get('/get-env', (req, res) => {
-  res.json({ userId: process.env.userId});
+  res.json({ userId: req.session.userId});
 });
 
 // Test Route
