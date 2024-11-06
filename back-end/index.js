@@ -3,13 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 require('dotenv').config();
 
 const app = express();
 
 // CORS Configuration
 app.use(cors({
-  origin: '*', // Replace with your client's domain
+  origin: '*',
   methods: 'GET, POST, PUT, DELETE'
 }));
 app.use(express.json());
@@ -38,40 +39,34 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   items: [itemSchema] // Embedded items directly in the user schema
 });
+const storeSchema = new mongoose.Schema({
+  userId : {type: String, required: true}
+});
 
 const User = mongoose.model('User', userSchema);
+const Store = mongoose.model('sessions', storeSchema);
 
-app.use(session({
-  secret: 'yourSecretKey', // Replace with a strong secret key
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true } // Set true if using HTTPS
-}));
-
-// Default userId value
-app.use((req, res, next) => {
-  if (!req.session.userId) {
-    req.session.userId = 'guest';
-  }
-  next();
-});
 
 // Sign Up Route
 app.post('/auth/signup', async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    // Check if user already exists
     if (await User.findOne({ email })) {
       return res.status(400).send({ msg: 'User already exists' });
     }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    
+
     const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
-    req.session.userId = newUser._id;
-    res.status(201).send({ userId: newUser._id, msg: 'User created successfully' });
+    
+    const store = await Store.findById(process.env.Storeid);
+    if(!store){
+      console.log("not found");
+    }
+    store.userId = newUser._id;
+    await store.save(); 
+      res.status(201).send({ userId: newUser._id, msg: 'User created successfully' });
   } catch (error) {
     console.error('Error in signup route:', error);
     res.status(500).send({ msg: 'Server error', error: error.message });
@@ -92,8 +87,14 @@ app.post('/auth/login', async (req, res) => {
     if (!isMatch) {
       return res.status(400).send({ msg: 'Invalid password' });
     }
-    req.session.userId = user._id;
-    res.status(200).send({ userId: user._id, msg: 'User login successful' });
+    const store = await Store.findById(process.env.Storeid);
+    if(!store){
+      console.log("not found");
+    }
+    store.userId = user._id;
+    await store.save();
+      res.status(200).send({ userId: store.userId, msg: 'User login successful' });
+  
   } catch (error) {
     console.error('Error in login route:', error);
     res.status(500).send({ msg: 'Server error', error: error.message });
@@ -129,7 +130,6 @@ app.post('/get-list', async (req, res) => {
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
     }
-
     res.status(200).json(user.items);
   } catch (error) {
     console.error('Error fetching items:', error);
@@ -157,8 +157,19 @@ app.delete('/insert/:id', async (req, res) => {
   }
 });
 
-app.get('/get-env', (req, res) => {
-  res.json({ userId: req.session.userId});
+app.get('/get-env', async (req, res) => {
+  console.log(process.env.Storeid);
+  const userId = await Store.findById(process.env.Storeid);
+  if(!userId){
+    res.status(404).json({msg: "user not found"});
+  }
+  const id = userId.userId;
+    res.status(200).json({ msg: "User is logged in", userId: id });
+});
+
+
+app.get('/session', (req, res) => {
+  res.json(req.session);
 });
 
 // Test Route
