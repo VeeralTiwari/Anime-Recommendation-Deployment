@@ -20,7 +20,6 @@ async function loginData(event) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            credentials : include,
             body: JSON.stringify(userinfo)
         });
         // Make sure the response is parsed as JSON
