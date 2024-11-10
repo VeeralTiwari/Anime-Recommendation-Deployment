@@ -108,7 +108,9 @@ app.post('/insert', async (req, res) => {
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
     }
-
+    if(user.items.findOne(catalog_id)){
+      return res.status(201).json({ msg: 'Item already added' });
+    }
     const newItem = { catalog_id, metadata };
     user.items.push(newItem);
     await user.save();
