@@ -3,6 +3,43 @@ const catalogs = document.querySelector(".catalogs");
 const genreList = document.querySelectorAll(".genre-heading");
 const loader = document.querySelector(".loader");
 const loadmore = document.querySelector(".loadmore");
+const login = document.querySelector(".login-tab");
+
+const logged = async ()=>{
+  const res = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+  });
+  const id = res.userId;
+  return id !== 'guest';
+}
+let isLogged;
+logged()
+.then(d => isLogged = d)
+.then(()=>{ if(isLogged){
+  login.textContent = "Logout";
+  login.classList.add('logout-tab');
+}});
+
+login.addEventListener('click', async (e)=>{
+  e.preventDefault();
+  const logout_tab = document.querySelector('.logout-tab');
+  if(!logout_tab)
+    return;
+  logout_tab.classList.remove('logout-tab');
+  logout_tab.textContent = "Login";
+  const res = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+  });
+  const data = await res.json();
+  console.log(data);
+  window.location.href = "login.html";
+});
 
 // Function to delay execution for a specified number of milliseconds
 async function delay(ms) {
