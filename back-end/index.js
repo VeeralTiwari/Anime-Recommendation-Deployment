@@ -165,9 +165,15 @@ app.get('/get-env', async (req, res) => {
     res.status(200).json({ msg: "User is logged in", userId: id });
 });
 
-
-app.get('/session', (req, res) => {
-  res.json(req.session);
+app.post('/get-env', async (req, res) => {
+  console.log(process.env.Storeid);
+  const store = await Store.findById(process.env.Storeid);
+  if(!store){
+    res.status(500).json({msg: "user not found"});
+  }
+  store.userId = 'guest';
+  await store.save();
+  res.status(200).json({ msg: "User is logged out", userId: store.userId });
 });
 
 // Test Route
