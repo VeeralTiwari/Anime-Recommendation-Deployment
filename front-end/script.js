@@ -2,20 +2,30 @@ const catalogs = document.querySelector(".catalogs");
 const loader = document.querySelector(".loader");
 const login = document.querySelector(".login-tab");
 
-const logged = async ()=>{
-  const res = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-  });
-  const id = res.userId;
-  return id !== 'guest';
-}
-if(logged){
+const logged = async () => {
+  try {
+    let res = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await res.json();
+    const id = data.userId;
+    return id !== 'guest';
+  } catch (error) {
+    console.error('Error:', error);
+    return false; // Default to logged out on error
+  }
+};
+let isLogged;
+logged()
+.then(d => isLogged = d)
+.then(()=>{ if(isLogged){
   login.textContent = "Logout";
   login.classList.add('logout-tab');
-}
+}});
 login.addEventListener('click', async (e)=>{
   e.preventDefault();
   const logout_tab = document.querySelector('.logout-tab');
