@@ -12,14 +12,10 @@ const logged = async ()=>{
   const id = res.userId;
   return id !== 'guest';
 }
-let isLogged;
-logged()
-.then(d => isLogged = d)
-.then(()=>{ if(isLogged){
+if(logged){
   login.textContent = "Logout";
   login.classList.add('logout-tab');
-}});
-
+}
 login.addEventListener('click', async (e)=>{
   e.preventDefault();
   const logout_tab = document.querySelector('.logout-tab');
