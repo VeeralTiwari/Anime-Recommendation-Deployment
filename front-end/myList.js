@@ -30,10 +30,10 @@ logged()
 login.addEventListener('click', async (e)=>{
   e.preventDefault();
   const logout_tab = document.querySelector('.logout-tab');
-  if(!logout_tab)
-    return;
-  logout_tab.classList.remove('logout-tab');
-  logout_tab.textContent = "Login";
+  if(logout_tab){
+     logout_tab.classList.remove('logout-tab');
+    logout_tab.textContent = "Login"; 
+  }
   const res = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
     method: 'POST',
     headers: {
