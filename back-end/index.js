@@ -161,7 +161,7 @@ app.get('/get-env', async (req, res) => {
   console.log(process.env.Storeid);
   const userId = await Store.findById(process.env.Storeid);
   if(!userId){
-    return res.status(404).json({msg: "user not found"});
+    return res.status(404).json({msg: "user not found", userId: 'guest'});
   }
   const id = userId.userId;
     res.status(200).json({ msg: "User is logged in", userId: id });
@@ -171,7 +171,7 @@ app.post('/get-env', async (req, res) => {
   console.log(process.env.Storeid);
   const store = await Store.findById(process.env.Storeid);
   if(!store){
-    return res.status(500).json({msg: "user not found"});
+    return res.status(500).json({msg: "user not found", userId: 'guest'});
   }
   store.userId = 'guest';
   await store.save();
