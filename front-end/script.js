@@ -4,7 +4,7 @@ const login = document.querySelector(".login-tab");
 
 const logged = async () => {
   try {
-    let res = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
+    let res = await fetch('http://127.0.0.1:3000/get-env', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -26,14 +26,15 @@ logged()
   login.textContent = "Logout";
   login.classList.add('logout-tab');
 }});
+
 login.addEventListener('click', async (e)=>{
   e.preventDefault();
   const logout_tab = document.querySelector('.logout-tab');
-  if(logout_tab){
-     logout_tab.classList.remove('logout-tab');
-    logout_tab.textContent = "Login"; 
-  }
-  const res = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
+  if(!logout_tab)
+    return;
+  logout_tab.classList.remove('logout-tab');
+  logout_tab.textContent = "Login";
+  const res = await fetch('http://127.0.0.1:3000/get-env', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
@@ -101,7 +102,7 @@ async function renderData(data, id) {
   catalogs.insertAdjacentHTML("beforeend", html);
 
   async function insertData() {
-    let userId = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
+    let userId = await fetch('http://127.0.0.1:3000/get-env', {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json'
@@ -120,7 +121,7 @@ async function renderData(data, id) {
       catalog_id: data.mal_id,
       metadata: jsonData
     };
-    fetch('https://anime-server-rrxx.onrender.com/insert', {
+    fetch('http://127.0.0.1:3000/insert', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -142,23 +143,64 @@ async function renderData(data, id) {
 }
 
 async function fetchAnimeList() {
-  const delayBetweenRequests = 200; // milliseconds
-  const arr = homePage;      // from Script_database
-  let set = new Set();
-  
-  let ajaxContent = [];
-  // Data Collection and Rendering
-  while (ajaxContent.length < 12) {
-    let num = Math.floor(Math.random() * 100);
-    let id = arr[num];
-    let data = await fetchAnimeData(id);
-    if (data) {
-      ajaxContent.push(data);
-      await renderData(data, id);
-      set.add(data);
+  let userId = await fetch('http://127.0.0.1:3000/get-env', {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+  });
+  userId = await userId.json();
+  console.log(userId.msg, userId.userId);
+  userId = userId.userId;
+  if(userId === 'guest'){
+    const delayBetweenRequests = 200; // milliseconds
+    const arr = homePage;      // from Script_database
+    let set = new Set();
+    
+    let ajaxContent = [];
+    // Data Collection and Rendering
+    while (ajaxContent.length < 12) {
+      let num = Math.floor(Math.random() * 100);
+      let id = arr[num];
+      let data = await fetchAnimeData(id);
+      if (data) {
+        ajaxContent.push(data);
+        await renderData(data, id);
+        set.add(data);
+      }
+      await delay(delayBetweenRequests);
     }
-    await delay(delayBetweenRequests);
+    return;
   }
+  const res = await fetch('http://127.0.0.1:3000/get-list',  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({userId: userId})
+  });
+  const data = await res.json();
+  data.forEach(async element => {
+    const response = await fetch('http://127.0.0.1:3000/get-similar',  {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ mal_id : element.catalog_id})
+    });
+    const similars = await response.json();
+    console.log(similars);
+    similars.forEach(async element => {
+      let api_res;
+      while(!api_res){
+        api_res = await fetchAnimeData(element.mal_id);
+      }
+      if (api_res) {
+        await renderData(api_res, element.mal_id);
+      }
+    });
+  });
+
   loader.classList.add("hidden");
   document.querySelector('footer').classList.toggle("hidden");
 }
