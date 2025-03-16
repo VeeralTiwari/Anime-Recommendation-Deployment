@@ -4,7 +4,7 @@ const login = document.querySelector(".login-tab");
 
 const logged = async () => {
   try {
-    let res = await fetch('http://127.0.0.1:3000/get-env', {
+    let res = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ login.addEventListener('click', async (e)=>{
     return;
   logout_tab.classList.remove('logout-tab');
   logout_tab.textContent = "Login";
-  const res = await fetch('http://127.0.0.1:3000/get-env', {
+  const res = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
@@ -102,7 +102,7 @@ async function renderData(data, id) {
   catalogs.insertAdjacentHTML("beforeend", html);
 
   async function insertData() {
-    let userId = await fetch('http://127.0.0.1:3000/get-env', {
+    let userId = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json'
@@ -121,7 +121,7 @@ async function renderData(data, id) {
       catalog_id: data.mal_id,
       metadata: jsonData
     };
-    fetch('http://127.0.0.1:3000/insert', {
+    fetch('https://anime-server-rrxx.onrender.com/insert', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -143,7 +143,7 @@ async function renderData(data, id) {
 }
 
 async function fetchAnimeList() {
-  let userId = await fetch('http://127.0.0.1:3000/get-env', {
+  let userId = await fetch('https://anime-server-rrxx.onrender.com/get-env', {
     method: 'GET',
     headers: {
         'Content-Type': 'application/json'
@@ -172,7 +172,7 @@ async function fetchAnimeList() {
     }
     return;
   }
-  const res = await fetch('http://127.0.0.1:3000/get-list',  {
+  const res = await fetch('https://anime-server-rrxx.onrender.com/get-list',  {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -181,7 +181,7 @@ async function fetchAnimeList() {
   });
   const data = await res.json();
   data.forEach(async element => {
-    const response = await fetch('http://127.0.0.1:3000/get-similar',  {
+    const response = await fetch('https://anime-server-rrxx.onrender.com/get-similar',  {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
