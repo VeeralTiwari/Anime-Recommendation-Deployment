@@ -2,8 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 require('dotenv').config();
 
+let db;
 const app = express();
 
 // CORS Configuration
@@ -21,8 +24,18 @@ mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log("Successfully connected to MongoDB"))
-.catch(err => console.log("MongoDB connection error: ", err));
+.then(() => {
+  console.log("Successfully connected to MongoDB");
+
+  db = mongoose.connection; // Assign the database reference to the global variable
+
+  // Example: Listening for errors after connection
+  db.on("error", err => console.error("MongoDB Error:", err));
+})
+.catch(err => console.log("MongoDB connection error:", err));
+
+const similarAnimes = mongoose.connection.collection("similar_animes_collection");
+
 
 // Item Schema
 const itemSchema = new mongoose.Schema({
@@ -32,7 +45,7 @@ const itemSchema = new mongoose.Schema({
 
 // User Schema
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true },
+  username: { type: String, required: true, unique: true, index: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   items: [itemSchema] // Embedded items directly in the user schema
@@ -108,8 +121,8 @@ app.post('/insert', async (req, res) => {
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
     }
-    if(user.items.findOne(catalog_id)){
-      return res.status(201).json({ msg: 'Item already added' });
+    if(user.items.findOne({catalog_id})){
+      return res.status(404).json({ msg: 'Item exist in your list' });
     }
     const newItem = { catalog_id, metadata };
     user.items.push(newItem);
@@ -137,41 +150,36 @@ app.post('/get-list', async (req, res) => {
   }
 });
 
-// Delete Item Route
-app.delete('/insert/:id', async (req, res) => {
-  const { id } = req.params;
-
+//GET SIMILAR ANIMES LIST
+app.post('/get-similar', async(req, res)=>{
+  const {mal_id} = req.body;
   try {
-    const user = await User.findOne({ "items._id": id });
-    if (!user) {
-      return res.status(404).json({ msg: 'Item not found' });
+    const anime = await similarAnimes.findOne({mal_id});
+    if (!anime) {
+      return res.status(404).json({ msg: 'anime not found' });
     }
-
-    user.items.id(id).remove();
-    await user.save();
-
-    res.status(200).json({ msg: 'Item successfully deleted' });
+    res.status(200).json(anime.similar_animes);
   } catch (error) {
-    console.error('Error deleting item:', error);
-    res.status(500).json({ msg: 'Error deleting item', error: error.message });
+    console.error('Error fetching items:', error);
+    res.status(500).json({ msg: 'Error fetching similar anime items', error: error.message });
   }
 });
 
 app.get('/get-env', async (req, res) => {
   console.log(process.env.Storeid);
-  const userId = await Store.findById(process.env.Storeid);
-  if(!userId){
-    return res.status(404).json({msg: "user not found", userId: 'guest'});
+  const store = await Store.findById(process.env.Storeid);
+  if(!store){
+    return res.status(500).json({msg: "user not found"});
   }
-  const id = userId.userId;
-    res.status(200).json({ msg: "User is logged in", userId: id });
+  const id = store.userId;
+  res.status(200).json({ msg: "User is logged in", userId: id });
 });
 
 app.post('/get-env', async (req, res) => {
   console.log(process.env.Storeid);
   const store = await Store.findById(process.env.Storeid);
   if(!store){
-    return res.status(500).json({msg: "user not found", userId: 'guest'});
+    return res.status(500).json({msg: "user not found"});
   }
   store.userId = 'guest';
   await store.save();
@@ -182,7 +190,6 @@ app.post('/get-env', async (req, res) => {
 app.get('/', (req, res) => {
   res.status(200).json({msg : 'server is running'});
 });
-
 // Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
